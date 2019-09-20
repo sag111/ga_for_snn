@@ -1,4 +1,5 @@
 import sys
+import os
 import os.path # for isfile('input/weight_initial.txt')
 import time # for proper randomization
 import numpy
@@ -14,7 +15,8 @@ from parameters.parameters_neuron import neuron_parameters
 nest.SetKernelStatus({
 	'resolution': 0.1,
 	'local_num_threads': 1,
-	'rng_seeds': [int(time.time())] # expects a list with a seed for each thread
+	# a truly random number generator, not dependent on the time
+	'rng_seeds': [int.from_bytes(os.urandom(4), sys.byteorder)] # expects a list with a seed for each thread
 })
 nest.sli_run('M_ERROR setverbosity') # setting quiet mode
 
