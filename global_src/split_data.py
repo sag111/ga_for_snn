@@ -71,21 +71,15 @@ def encode_with_gaussian_receptive_fields(X):
 if __name__ == "__main__":
     X, y = load_dataset()
 
-    # This normalization is performed by row, not by column,
-    # so it may safely be done before train-test-splitting.
-    if 'L2' in network_parameters['normalize']:
-        X = sklearn.preprocessing.normalize(X, norm = 'l2', axis = 1)
-    if 'L1' in network_parameters['normalize']:
-        X = sklearn.preprocessing.normalize(X, norm = 'l1', axis = 1)
-    if 'complement' in network_parameters['normalize']:
-        X = numpy.array([
-            numpy.concatenate([
-                x,
-                # append a complement to x
-                (x - X.max()) * (-1)
-            ])
-            for x in X
-        ])
+    if network_parameters['dataset'] == 'MNIST':
+        # MNIST has a precomposed testing set.
+        # So, we train on a random subset (but
+        # not overlapping the testing set),
+        # and test on all the 10 000 last instances.
+        test_X = X[-10000:]
+        test_y = y[-10000:]
+        X = X[:-10000]
+        y = y[:-10000]
 
     splits = sklearn.model_selection.StratifiedKFold(
         n_splits=5,
@@ -101,14 +95,34 @@ if __name__ == "__main__":
         train_indices, test_indices = current_split
         train_X = X[train_indices]
         train_y = y[train_indices]
-        test_X = X[test_indices]
-        test_y = y[test_indices]
+        if network_parameters['dataset'] != 'MNIST':
+            test_X = X[test_indices]
+            test_y = y[test_indices]
+        # Else test_X and test_y are predefined.
 
-        if 'minmaxscale' in network_parameters['normalize']:
-            train_X, test_X = [
-                sklearn.preprocessing.minmax_scale(train_or_test_X, copy=False)
-                for train_or_test_X in (train_X, test_X)
-            ]
+        def normalize(X):
+            for norm_type in network_parameters['normalize'].split('+'):
+                if norm_type == 'L2':
+                    X = sklearn.preprocessing.normalize(X, norm = 'l2', axis = 1)
+                if norm_type == 'L1':
+                    X = sklearn.preprocessing.normalize(X, norm = 'l1', axis = 1)
+                if norm_type == 'complement':
+                    X = numpy.concatenate(
+                        [
+                            X,
+                            # append a complement to x
+                            X.max() - X
+                        ],
+                        axis=1
+                    )
+                if norm_type == 'minmaxscale':
+                    X = sklearn.preprocessing.minmax_scale(X, copy=False)
+            return X
+        train_X, test_X = [
+            normalize(train_or_test_X)
+            for train_or_test_X in (train_X, test_X)
+        ]
+
         if network_parameters['gaussian_encoding'] == True:
             train_X, test_X = map(
                 encode_with_gaussian_receptive_fields,
@@ -131,8 +145,8 @@ if __name__ == "__main__":
             # Trim the data to decrease simulation time.
             max_train_size = 30
             max_test_size = 10
-            #current_train_X = current_train_X[:max_train_size]
-            #current_test_X = current_test_X[:max_test_size]
+            current_train_X = current_train_X[:max_train_size]
+            current_test_X = current_test_X[:max_test_size]
 
             numpy.savetxt(
                 'train_data/mask_class' + str(current_class) + '.txt',
