@@ -170,6 +170,11 @@ for description, accuracies_array in (
             std=100*np.std(accuracies_array),
             min=100*np.min(accuracies_array),
             max=100*np.max(accuracies_array)
+        ),
+        file=open(
+            path_to_experiment_data
+            + '/comparison_to_gradient_boosting.txt',
+            'a'
         )
     )
 
