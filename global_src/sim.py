@@ -5,6 +5,7 @@ import time # for proper randomization
 import numpy
 
 import nest
+nest.set_verbosity('M_QUIET')
 
 # Reading parameters.
 sys.path.append('.')
@@ -18,7 +19,6 @@ nest.SetKernelStatus({
 	# a truly random number generator, not dependent on the time
 	'rng_seeds': [int.from_bytes(os.urandom(4), sys.byteorder)] # expects a list with a seed for each thread
 })
-nest.sli_run('M_ERROR setverbosity') # setting quiet mode
 
 # Reading input data.
 input_masks = numpy.loadtxt('input/mask.txt')
