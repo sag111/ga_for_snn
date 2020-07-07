@@ -89,13 +89,15 @@ nest.Connect(neuron_id, detector_id, syn_spec = 'static_synapse')
 weights_outfile = open('weights.txt', 'w')
 rate_outfile = open('out_rate.txt', 'w')
 total_time_elapsed = 0
-for epochs_elapsed in range(
-	int(numpy.ceil(
+if testing_is_now:
+	max_epochs = 1
+else:
+	max_epochs = int(numpy.ceil(
 		network_parameters['time_max']
 		/ network_parameters['one_vector_longtitude']
 		/ len(input_rates)
 	))
-):
+for epochs_elapsed in range(max_epochs):
 	# Because of the for loop below,
 	# time is rounded to full epochs even if it would be higher than time_max.
 	for current_input_vector in input_rates:
