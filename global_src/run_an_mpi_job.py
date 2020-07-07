@@ -13,8 +13,8 @@ chdir('genome' + str(rank))
 system('''
 	# Bootstrap the environment, since we are on a new MPI
 	# process, with environment not inherited.
-	source /s/ls4/users/aserenko/anaconda3/bin/activate genetic
-	source /s/ls4/users/aserenko/opt/nest-installed3/bin/nest_vars.sh
+	source /s/ls4/users/aserenko/anaconda3/bin/deactivate
+	source /s/ls4/users/aserenko/anaconda3/bin/activate spikes
 	export OMP_NUM_THREADS=1
 
 	bash {src_path:s}/train_and_test.sh > out.txt 2>err.txt

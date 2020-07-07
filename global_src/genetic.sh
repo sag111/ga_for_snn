@@ -14,7 +14,7 @@ module load openmpi
 export HOME=/s/ls4/users/aserenko/
 
 source /s/ls4/users/aserenko/anaconda3/bin/activate genetic
-source /s/ls4/users/aserenko/opt/nest-installed/bin/nest_vars.sh
+#source /s/ls4/users/aserenko/opt/nest-installed/bin/nest_vars.sh
 export OMP_NUM_THREADS=1
 
 cd models
