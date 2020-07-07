@@ -70,10 +70,12 @@ do
 
 			# this genome' parameters/ are
 			# out of Neuron$neu, then out of Training/Testing, then out of fold*
-			cp -R $data_path/../parameters ./parameters
+			ln -s $data_path/../parameters ./parameters
 
 			mkdir input
-			cp $data_path/train_data/mask_class$neu.txt input/mask.txt
+			cd input
+			ln -s ../$data_path/train_data/mask_class$neu.txt ./mask.txt
+			cd ..  # out of input/
 
 			python $SRC_PATH/sim.py
 
